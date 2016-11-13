@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.larry.hms.mapper.MedicineAmtMapper">
+	<resultMap id="MedAmtMap" type="com.larry.hms.entity.MedicineAmt">
+		<id column="med_id" property="medId" jdbcType="INTEGER"/>
+		<result column="name" property="name" />
+		<result column="type" property="type" />
+		<result column="amount_warehouse" property="amountWarehouse" />
+		<result column="amount_storehouse" property="amountStorehouse" />
+		<result column="unit" property="unit" />
+		<result column="expiry_date" property="expiryDate" />
+		<result column="place" property="place" />
+		<result column="price" property="price" jdbcType="DECIMAL" />
+	</resultMap>
+	<sql id="baseColumnList">
+		med_id,name,type,amount_warehouse,amount_storehouse,unit,expiry_date,place,price
+	</sql>
+	<insert id="insertMedicineAmount" parameterType="com.larry.hms.entity.MedicineAmt"
+		useGeneratedKeys="true" keyProperty="medId">
+		insert into med_amt
+		(name,type,amount_warehouse,amount_storehouse,unit,expiry_date,place,price)
+		values
+		(#{name},#{type},#{amountWarehouse},#{amountStorehouse},#{unit},#{expiryDate},#{place},#{price})
+	</insert>
+	
+	<update id="updateMedicineAmount" parameterType="com.larry.hms.entity.MedicineAmt">
+		update med_amt set
+		name = #{name},
+		type = #{type},
+		amount_warehouse = #{amountWarehouse},
+		amount_storehouse = #{amountStorehouse},
+		unit = #{unit},
+		expiry_date = #{expiryDate},
+		place = #{place},
+		price = #{price}
+		where med_id = #{medId}
+	</update>
+	<delete id="deleteMedicineAmountById" parameterType="int">
+		delete from med_amt where med_id = #{medId}
+	</delete>
+	<select id="selectAll" resultMap="MedAmtMap">
+		select <include refid="baseColumnList"/> from med_amt
+	</select>
+	<select id="search" resultType="com.larry.hms.entity.MedicineAmt" parameterType="java.util.Map">
+		select <include refid="baseColumnList"/> from med_amt
+		where 1=1
+		<if test="name != null">
+			AND name like CONCAT('%',#{name},'%') 
+		</if>
+		<if test="type != null">
+			AND type = #{type}
+		</if>
+		<if test="place != null">
+			AND place like CONCAT('%',#{place},'%')
+		</if>
+	</select>
+	<select id="selectByEntity" parameterType="com.larry.hms.entity.MedicineAmt" resultType="com.larry.hms.entity.MedicineAmt">
+		select <include refid="baseColumnList"/> from med_amt
+		where 1=1
+		<if test="medId != null">
+			AND med_id = #{medId}
+		</if>
+		<if test="name != null">
+			AND name = #{name}
+		</if>
+		<if test="type != null">
+			AND type = #{type}
+		</if>
+		<if test="amountWarehouse != null">
+			AND amount_warehouse = #{amountWarehouse}
+		</if>
+		<if test="amountStorehouse != null">
+			AND amount_storehouse = #{amountStorehouse}
+		</if>
+		<if test="unit != null">
+			AND unit = #{unit}
+		</if>
+		<if test="expiryDate != null">
+			AND expiry_date = #{expiryDate}
+		</if>
+		<if test="place != null">
+			AND place = #{place}
+		</if>
+		<if test="price != null">
+			AND price = #{price}
+		</if>
+	</select>
+	<select id="selectAllByPage" resultType="com.larry.hms.entity.MedicineAmt" parameterType="java.util.Map" resultMap="MedAmtMap">
+		select <include refid="baseColumnList"/> from med_amt 
+		where 1=1
+		<if test="medicineAmt.name != null">
+			AND name like CONCAT('%',#{medicineAmt.name},'%')
+		</if>
+		limit #{offset,jdbcType=INTEGER},#{rows,jdbcType=INTEGER}
+	</select>
+	<select id="countAll" resultType="int" parameterType="com.larry.hms.entity.MedicineAmt">
+		select count(1) from med_amt
+		where 1=1
+		<if test="name != null">
+			AND name like CONCAT('%',#{name},'%')
+		</if>
+		;
+	</select>
+	<select id="selectById" parameterType="int" resultMap="MedAmtMap">
+		select <include refid="baseColumnList"/> from med_amt where med_id = #{medId}
+	</select>
+</mapper>

@@ -1,0 +1,40 @@
+h1,h3,p,a,button{
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.indexPage{
+    height: 750px;
+
+}
+.indexPage-bg{
+    height: 800px;
+    width: 100%;
+    position: absolute;
+    background-position: center center;
+    background-size: cover;
+}
+#indexPageBg{
+    background-image: url("../images/bg01.jpg");
+}
+.title-text{
+    float: right;
+}
+.headh1content{
+    margin-top: 200px;
+    line-height: 50px;
+}
+.headh1content h1{
+    font-size: 50pt;
+}
+.btn-join{
+    margin-top: 100px;
+    float: right;
+}
+#brandingBg{
+    background-image: url("../images/header01.jpg");
+}
+.med-search{
+    float:left
+}
+.med-opr{
+    float:right
+}

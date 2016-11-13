@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>医院管理系统</title>
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="css/hms.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="libs/bootstrap-datetimepicker-master/css/bootstrap-datetimepicker.min.css" media="screen">
+    <script src="libs/jquery.min.js"></script>
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+    <script src="libs/angular-1.5.8/angular.min.js"></script>
+    <script src="scripts/controller/medicineWareHouseController.js"></script>
+    <script src="libs/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.min.js"></script>
+    <script src="libs/bootstrap-datetimepicker-master/js/locales/bootstrap-datetimepicker.fr.js"></script>
+    <script src="libs/bootstrap-datetimepicker-master/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+</head>
+<body ng-app="medicineWareHouseModule" ng-controller="medicineWareHouseController">
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">医院管理系统</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="/hms/index.html">主页</a></li>
+                <li><a href="#">设置</a></li>
+                <li><a href="#">资料</a></li>
+                <li><a href="#">帮助</a></li>
+            </ul>
+            <form class="navbar-form navbar-right">
+                <input type="text" class="form-control" placeholder="Search...">
+            </form>
+        </div>
+    </div>
+</nav>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+            <ul class="nav nav-sidebar">
+                <li><a href="/hms/main.html">药品管理</a></li>
+                <li class="active"><a href="/hms/warehouse.html">药库管理</a></li>
+                <li><a href="/hms/storehouse.html">药房管理</a></li>
+            </ul>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            <h2 class="sub-header">药库管理</h2>
+            <div class="btn-group btn-group-sm">
+                <!--
+                <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#medAmt-add">
+                    <span class="glyphicon glyphicon-plus"></span> 新增
+                </button>
+                -->
+                <form class="med-search">
+                    <input type="text" class="input-sm" placeholder="输入药品名称" ng-model="medName">
+                    <button type="button" class="btn btn-default btn-sm" ng-click="medicineSearch(medName)">
+                        <span class="glyphicon glyphicon-search"></span> 搜索
+                    </button>
+                </form>
+                <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#medAmt-export">
+                    <span class="glyphicon glyphicon-export"></span> 导出入药房记录
+                </button>
+                <button type="button" class="btn btn-default btn-sm" ng-click="refresh()">
+                    <span class="glyphicon glyphicon-refresh"></span> 刷新
+                </button>
+
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped table-condensed">
+                    <thead>
+                    <tr>
+                        <th>药品名称</th>
+                        <th>药品类型</th>
+                        <th>药库量</th>
+                        <th>药房量</th>
+                        <th>单位</th>
+                        <th>过期日期</th>
+                        <th>存放位置</th>
+                        <th>价格</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="medAmt in medAmts">
+                        <td>{{medAmt.name}}</td>
+                        <td>{{medAmt.type}}</td>
+                        <td>{{medAmt.amountWarehouse}}</td>
+                        <td>{{medAmt.amountStorehouse}}</td>
+                        <td>{{medAmt.unit}}</td>
+                        <td>{{medAmt.expiryDate | date : 'yyyy-MM-dd'}}</td>
+                        <td>{{medAmt.place}}</td>
+                        <td>{{medAmt.price}}</td>
+                        <td>
+                            <input type="text" class="input-sm" style="width:70px" placeholder="数量" ng-model="storeAmt">
+                            <button class="btn btn-primary btn-sm" ng-click="expToStoreHouse(medAmt,storeAmt)">
+                                <span class="glyphicon glyphicon-arrow-right"></span> 入药房
+                            </button>
+                            <button class="btn btn-primary btn-sm" ng-click="editMedicineAmt(medAmt.medId)">
+                                <span class="glyphicon glyphicon-edit"></span> 编辑
+                            </button>
+                            <button class="btn btn-danger btn-sm" ng-click="delMedicineAmtModal(medAmt.medId,medAmt.name)">
+                                <span class="glyphicon glyphicon glyphicon-trash"></span> 删除
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <nav>
+                <ul class="pagination">
+                    <li>
+                        <button type="button" class="btn btn-info" ng-click="previous()">
+                            <span class="glyphicon glyphicon-chevron-left"></span>
+                        </button>
+                    </li>
+                    <li ng-repeat="page in pageList" ng-class="{active: isActivePage(page)}" >
+                        <a ng-click="selectPage(page)" >{{ page }}</a>
+                    </li>
+                    <li>
+
+                        <button type="button" class="btn btn-info" ng-click="next()">
+                            <span class="glyphicon glyphicon-chevron-right"></span>
+                        </button>
+                    </li>
+                    <span>一共{{ totalPage }}页/{{ totalCount }}条记录</span>
+                    <span>当前第{{ currentPage }}页</span>
+                </ul>
+            </nav>
+        </div>
+    </div>
+    <!-- 模态框（Modal）新增 -->
+    <div class="modal fade" id="medAmt-add" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="mediAmt-add-label">新增药品</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal" role="form" id="medAmtAddForm">
+                        <div class="form-group row">
+                            <label for="name" class="col-sm-2 control-label">药品名称</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="name" ng-model="name" placeholder="请输入药品名称">
+                            </div>
+                            <label for="type" class="col-sm-2 control-label">药品类型</label>
+                            <div class="col-sm-10">
+                                <select class="form-control" id="type" ng-model="type">
+                                    <option>药品</option>
+                                    <option>器械</option>
+                                </select>
+                            </div>
+                            <label for="amountWarehouse" class="col-sm-2 control-label">药库量</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="amountWarehouse" ng-model="amountWarehouse" placeholder="请输入该药品在药库的数目">
+                            </div>
+                            <label for="amountStorehouse" class="col-sm-2 control-label">药房量</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="amountStorehouse" ng-model="amountStorehouse" placeholder="请输入该药品在药房的数目">
+                            </div>
+                            <label for="unit" class="col-sm-2 control-label">单位</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="unit" ng-model="unit" placeholder="">
+                            </div>
+                            <label for="expiryDate" class="col-sm-2 control-label">过期日期</label>
+                            <div class="col-sm-10 form_date date" data-date="" data-date-format="dd MM yyyy" data-link-field="expiryDate" data-link-format="yyyy-mm-dd">
+                                <input type="text" size="16" class="form-control" id="expiryDate" ng-model="expiryDate" placeholder="过期日期">
+                                <span class="add-on"><i class="icon-th"></i></span>
+                            </div>
+                            <label for="place" class="col-sm-2 control-label">存放位置</label>
+                            <div class="col-sm-10 input-append date form-datetime">
+                                <input type="text" class="form-control" id="place" ng-model="place" placeholder="存放位置">
+                                <span class="add-on"><i class="icon-th"></i></span>
+                            </div>
+                            <label for="price" class="col-sm-2 control-label">价格</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="price" ng-model="price" placeholder="请输入该药品的价格">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" ng-click="submit()">提交</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+    <!-- 模态框（Modal）新增 -->
+    <div class="modal fade" id="medAmt-update" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="mediAmt-update-label">更新</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal" role="form" id="medAmtUpdateForm">
+                        <div class="form-group row">
+                            <input type="hidden" name="up_medId" id="up_medId" ng-model="up_medId"/>
+                            <label for="up_name" class="col-sm-2 control-label">药品名称</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="up_name" ng-model="up_name" placeholder="请输入药品名称">
+                            </div>
+                            <label for="up_type" class="col-sm-2 control-label">药品类型</label>
+                            <div class="col-sm-10">
+                                <select class="form-control" id="up_type" ng-model="up_type">
+                                    <option>药品</option>
+                                    <option>器械</option>
+                                </select>
+                            </div>
+                            <label for="up_amountWarehouse" class="col-sm-2 control-label">药库量</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="up_amountWarehouse" ng-model="up_amountWarehouse" placeholder="请输入该药品在药库的数目">
+                            </div>
+                            <label for="up_amountStorehouse" class="col-sm-2 control-label">药房量</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="up_amountStorehouse" ng-model="up_amountStorehouse" placeholder="请输入该药品在药房的数目">
+                            </div>
+                            <label for="up_unit" class="col-sm-2 control-label">单位</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="up_unit" ng-model="up_unit" placeholder="">
+                            </div>
+                            <label for="up_expiryDate" class="col-sm-2 control-label">过期日期</label>
+                            <div class="col-sm-10 form_date date" data-date="" data-date-format="dd MM yyyy" data-link-field="up_expiryDate" data-link-format="yyyy-mm-dd">
+                                <input type="text" size="16" class="form-control" id="up_expiryDate" ng-model="up_expiryDate" placeholder="过期日期">
+                                <span class="add-on"><i class="icon-th"></i></span>
+                            </div>
+                            <label for="up_place" class="col-sm-2 control-label">存放位置</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="up_place" ng-model="up_place" placeholder="存放位置">
+                                <span class="add-on"><i class="icon-th"></i></span>
+                            </div>
+                            <label for="up_price" class="col-sm-2 control-label">价格</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="up_price" ng-model="up_price" placeholder="请输入该药品的价格">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" ng-click="medicineAmtupdate()">提交</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+    <!-- 模态框（Modal）confirm -->
+    <div class="modal fade" id="medAmt-del" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="myModalLabel">警告</h4>
+                </div>
+                <div class="modal-body">确定要删除药品:<span ng-model = "del_name"></span>{{del_name}}么？</div>
+                <input type="hidden" name="del_medId" id="del_medId" ng-model="del_medId"/>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" ng-click="medicineAmtDel()">删除</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+    <!-- /.modal -->
+    <div class="modal fade" id="medAmt-export" tabindex="-1" role="dialog" aria-labelledby="medAmtExport" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="medAmtExport">导出入药房记录</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal" role="form" id="medAmtExportForm">
+                        <div class="form-group row">
+                            <label for="sd_time" class="col-sm-2 control-label">开始时间</label>
+                            <div class="col-sm-10 form_datetime date" data-date="" >
+                                <input type="text" class="form-control" id="sd_time" ng-model="sd_time" placeholder="入库开始时间">
+                                <span class="add-on"><i class="icon-th"></i></span>
+                            </div>
+                            <label for="ed_time" class="col-sm-2 control-label">结束时间</label>
+                            <div class="col-sm-10 form_datetime date" data-date="" >
+                                <input type="text" class="form-control" id="ed_time" ng-model="ed_time" placeholder="入库结束时间">
+                                <span class="add-on"><i class="icon-th"></i></span>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" ng-click="export(sd_time,ed_time)">导出</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+</div>
+<script>
+    $(".form_date").datetimepicker({
+        format: 'yyyy-mm-dd',
+        language:  'zh-CN',
+        weekStart: 1,
+        todayBtn:  1,
+        autoclose: 1,
+        todayHighlight: 1,
+        startView: 2,
+        minView: 2,
+        forceParse: 0});
+    $(".form_datetime").datetimepicker({
+        format: "yyyy-mm-dd hh:ii:ss",
+        language: 'zh-CN',
+        autoclose: true,
+        todayBtn: true,
+        startDate: "2013-02-14 10:00:00",
+        minuteStep: 10
+    });
+</script>
+</body>
+</html>

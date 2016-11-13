@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<beans xmlns="http://www.springframework.org/schema/beans"  
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"  
+    xmlns:context="http://www.springframework.org/schema/context"  
+    xmlns:mvc="http://www.springframework.org/schema/mvc"  
+    xsi:schemaLocation="http://www.springframework.org/schema/beans    
+                        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd    
+                        http://www.springframework.org/schema/context    
+                        http://www.springframework.org/schema/context/spring-context-3.1.xsd    
+                        http://www.springframework.org/schema/mvc    
+                        http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
+    <!-- 启用spring mvc 注解 
+    <context:annotation-config />
+    <mvc:annotation-driven />
+    -->
+    <mvc:default-servlet-handler/>
+    <!-- 扫描路径 -->  
+    <context:component-scan base-package="com.larry.hms.controller" />
+    <context:component-scan base-package="com.larry.hms.service"/>
+    <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" /> 
+    <!-- 完成请求和注解POJO的映射 -->
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" />
+    <!-- 添加注解驱动 -->  
+    <mvc:annotation-driven>  
+        <mvc:message-converters register-defaults="false">  
+            <bean  
+                class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter">  
+                <property name="supportedMediaTypes">  
+                    <list>  
+                        <!-- 避免IE返回时出现下载提示！ -->  
+                        <value>text/html;charset=UTF-8</value>  
+                        <value>application/json;charset=UTF-8</value>  
+                    </list>  
+                </property>  
+            </bean>  
+        </mvc:message-converters>  
+    </mvc:annotation-driven>
+    <bean class="org.springframework.web.servlet.view.XmlViewResolver">
+        <property name="order" value="1"/>
+        <property name="location" value="classpath:mvc-views.xml"/>
+    </bean> 
+</beans>

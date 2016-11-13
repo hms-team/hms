@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.larry.hms.mapper.MedicineTransferRecordMapper">
+	<resultMap type="com.larry.hms.entity.MedicineTransferRecord" id="medTransferRecordMap">
+		<result column="med_id" property="medId"/>
+		<result column="source" property="source"/>
+		<result column="destination" property="destination"/>
+		<result column="amount" property="amount"/>
+		<result column="date" property="date"/>
+	</resultMap>
+	<insert id="insertMedicineTransferRecord" parameterType="com.larry.hms.entity.MedicineTransferRecord">
+		insert into med_transfer_record (med_id,source,destination,amount,date)
+		values (#{medId},#{source},#{destination},#{amount},#{date})
+	</insert>
+	<select id="transferRecordList" parameterType="map" resultType="map">
+		select m.*,sum(r.amount) as transferAmt from med_transfer_record r,med_amt m 
+		where r.med_id = m.med_id 
+		and r.date &lt;= #{edTime}
+		and r.date &gt;= #{sdTime}
+		and r.destination = #{destination}
+		group by m.med_id
+	</select>
+</mapper>
