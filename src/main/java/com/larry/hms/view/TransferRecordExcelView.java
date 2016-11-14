@@ -47,12 +47,15 @@ public class TransferRecordExcelView extends AbstractXlsView{
 			medicineAmtRow.createCell(2).setCellValue(medicineAmt.get("amount_warehouse").toString());
 			medicineAmtRow.createCell(3).setCellValue(medicineAmt.get("amount_storehouse").toString());
 			medicineAmtRow.createCell(4).setCellValue(medicineAmt.get("unit").toString());
-			if(medicineAmt.get("expiry_date") != null){
+			if(medicineAmt.containsKey("expiry_date")){
 				medicineAmtRow.createCell(5).setCellValue(medicineAmt.get("expiry_date").toString());
 			}
-			
-			medicineAmtRow.createCell(6).setCellValue(medicineAmt.get("place").toString());
-			medicineAmtRow.createCell(7).setCellValue(medicineAmt.get("price").toString());
+			if(medicineAmt.containsKey("place")){
+				medicineAmtRow.createCell(6).setCellValue(medicineAmt.get("place").toString());
+			}
+			if(medicineAmt.containsKey("price")){
+				medicineAmtRow.createCell(7).setCellValue(medicineAmt.get("price").toString());
+			}
 			medicineAmtRow.createCell(8).setCellValue(medicineAmt.get("transferAmt").toString());
 		}
 			
