@@ -17,6 +17,9 @@
 		where r.med_id = m.med_id 
 		and r.date &lt;= #{edTime}
 		and r.date &gt;= #{sdTime}
+		<if test="source != null">
+			and r.source = #{source}
+		</if>
 		and r.destination = #{destination}
 		group by m.med_id
 	</select>

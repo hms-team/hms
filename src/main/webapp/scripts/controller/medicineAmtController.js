@@ -231,7 +231,7 @@ medicineAmtModule.controller("medicineAmtController",function ($scope, $http) {
     $scope.export = function (sd_time,ed_time) {
         console.log("downloading the medicine amount excel file from "+sd_time+" to "+ed_time);
         $('#medAmt-export').modal('hide');
-        var url ="/hms/medicineAmt/transferRecordList?sd_time="+sd_time+"&ed_time="+ed_time+"&destination=WARE_HS";
+        var url ="/hms/medicineAmt/transferRecordList?sd_time="+sd_time+"&ed_time="+ed_time+"&source=OTHERS&destination=WARE_HS";
         //window.open(url);
         window.location.href = url;
 

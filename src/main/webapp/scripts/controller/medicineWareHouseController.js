@@ -209,8 +209,8 @@ medicineAmtModule.controller("medicineWareHouseController",function ($scope, $ht
             console.log("error:"+data);
         });
     };
-    $scope.expToStoreHouse = function (medAmt,storeAmt) {
-        console.log("preparing transfer "+storeAmt+" drug with id = "+medAmt.medId+" to store house at "+ new Date());
+    $scope.consume = function (medAmt,storeAmt,from,to) {
+        console.log("preparing transfer "+storeAmt+" drug with id = "+medAmt.medId+"from "+from+" to "+to+" at "+ new Date());
         if(isNaN(storeAmt)){
             alert("请输入正确的数量");
             return;
@@ -221,11 +221,14 @@ medicineAmtModule.controller("medicineWareHouseController",function ($scope, $ht
             return;
         }
         medAmt.amountWarehouse = temp;
-        medAmt.amountStorehouse = parseInt(medAmt.amountStorehouse) + parseInt(storeAmt);
+        if("STORE_HS" == to){
+            medAmt.amountStorehouse = parseInt(medAmt.amountStorehouse) + parseInt(storeAmt);
+        }
+
         $http({
             method:"POST",
             url:"/hms/medicineAmt/transfer",
-            data:{medId:medAmt.medId,source:"WARE_HS",destination:"STORE_HS",amount:storeAmt,date:new Date()}
+            data:{medId:medAmt.medId,source:from,destination:to,amount:storeAmt,date:new Date()}
         }).success(function (data, status, headers, config) {
             console.log("success:"+data);
             var jsonResult = angular.fromJson(data);
@@ -237,7 +240,7 @@ medicineAmtModule.controller("medicineWareHouseController",function ($scope, $ht
     $scope.export = function (sd_time,ed_time) {
         console.log("downloading the medicine amount excel file from "+sd_time+" to "+ed_time);
         $('#medAmt-export').modal('hide');
-        var url ="/hms/medicineAmt/transferRecordList?sd_time="+sd_time+"&ed_time="+ed_time+"&destination=STORE_HS";
+        var url ="/hms/medicineAmt/transferRecordList?sd_time="+sd_time+"&ed_time="+ed_time+"&source=WARE_HS&destination=STORE_HS";
         //window.open(url);
         window.location.href = url;
 

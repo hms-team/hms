@@ -97,9 +97,12 @@
                         <td>{{medAmt.place}}</td>
                         <td>{{medAmt.price}}</td>
                         <td>
-                            <input type="text" class="input-sm" style="width:70px" placeholder="数量" ng-model="storeAmt">
-                            <button class="btn btn-primary btn-sm" ng-click="expToStoreHouse(medAmt,storeAmt)">
+                            <input type="text" class="input-sm" style="width:70px" placeholder="数量" ng-model="amount">
+                            <button class="btn btn-primary btn-sm" ng-click="consume(medAmt,amount,'WARE_HS','STORE_HS')">
                                 <span class="glyphicon glyphicon-arrow-right"></span> 入药房
+                            </button>
+                            <button class="btn btn-primary btn-sm" ng-click="consume(medAmt,amount,'WARE_HS','CONSUME')">
+                                <span class="glyphicon glyphicon-arrow-right"></span> 消耗
                             </button>
                             <button class="btn btn-primary btn-sm" ng-click="editMedicineAmt(medAmt.medId)">
                                 <span class="glyphicon glyphicon-edit"></span> 编辑

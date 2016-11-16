@@ -200,15 +200,15 @@ public class MedicineAmtController {
 	@RequestMapping(value="/transferRecordList",method=RequestMethod.GET)
 	public ModelAndView transferRecordList(ModelMap model, HttpServletRequest request){
 		log.info("/list the transfer record by parameters:"+request);
-		ResponseInfo<List<MedicineTransferRecord>> response = new ResponseInfo<List<MedicineTransferRecord>>();
-		
 		String sdTime = request.getParameter("sd_time");
 		String edTime = request.getParameter("ed_time");
+		String source = request.getParameter("source");
 		String destination = request.getParameter("destination");
 		log.info("sdTime:"+sdTime+",edTime:"+edTime+",destination:"+destination);
 		Map<String,Object> params = new HashMap<String,Object>();
 		params.put("sdTime", sdTime);
 		params.put("edTime", edTime);
+		params.put("source", source);
 		params.put("destination", destination);
 		List<Map<String,Object>> result = medicineTransferRecordService.wareHouseTrsRdList(params);
 		model.put("transferRecordList", result);
